@@ -2,88 +2,122 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Acceso Rápido</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Puerta Urbatenis</title>
   
-    <!-- Favicon para navegador -->
+    <!-- Configuración para comportamiento como Aplicación Web (PWA / Pantalla de inicio) -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#2196F3">
+    
+    <!-- Iconos -->
     <link rel="icon" href="icono.PNG" type="image/png">
-
-    <!-- Icono para pantalla de inicio iPhone -->
     <link rel="apple-touch-icon" href="icono.PNG">
    
     <style>
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
         body {
             margin: 0;
-            padding: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #2196F3, #64B5F6);
+            padding: 20px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background: linear-gradient(135deg, #1e88e5, #1565c0);
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
+            min-height: 100vh;
             color: #fff;
+            touch-action: manipulation;
         }
 
         .container {
             text-align: center;
-            max-width: 90%;
+            width: 100%;
+            max-width: 380px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            padding: 30px 20px;
+            border-radius: 24px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.18);
         }
 
         h1 {
-            margin-bottom: 30px;
+            margin: 0 0 20px 0;
+            font-size: 24px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .img-container {
+            width: 100%;
+            height: 180px;
+            border-radius: 16px;
+            overflow: hidden;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
         }
 
         img {
-            max-width: 100%;
-            height: auto;
-            border-radius: 10px;
-            margin-bottom: 30px;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
 
         .button {
-            background-color: #43a047;
+            width: 100%;
+            background-color: #2e7d32;
             color: #ffffff;
-            padding: 18px 40px;
-            font-size: 20px;
-            font-weight: bold;
+            padding: 20px;
+            font-size: 18px;
+            font-weight: 700;
             border: none;
-            border-radius: 10px;
+            border-radius: 16px;
             cursor: pointer;
-            transition: 0.3s;
+            box-shadow: 0 6px 16px rgba(46, 125, 50, 0.4);
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
         }
 
-        .button:hover {
-            background-color: #2e7d32;
+        .button:active {
+            transform: scale(0.97);
+            box-shadow: 0 2px 8px rgba(46, 125, 50, 0.4);
         }
 
         .button:disabled {
-            opacity: 0.6;
+            background-color: #78909c;
+            box-shadow: none;
+            opacity: 0.7;
             cursor: not-allowed;
+            transform: none;
         }
 
         .status {
             margin-top: 20px;
-            font-size: 18px;
-            font-weight: bold;
+            font-size: 16px;
+            font-weight: 600;
             min-height: 24px;
-        }
-
-        @media (max-width: 500px) {
-            .button {
-                padding: 15px 30px;
-                font-size: 18px;
-            }
+            transition: opacity 0.3s ease;
         }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>Puerta Urbatenis</h1>
-        <img src="foto.JPG" alt="imagen">
+        
+        <div class="img-container">
+            <img src="foto.JPG" alt="Imagen de la entrada">
+        </div>
 
-        <button class="button"
-            onclick="enviarOrden(this)">
-            Abre la Puerta
+        <button id="btnAbrir" class="button" onclick="enviarOrden(this)">
+            <span>🔓 Abre la Puerta</span>
         </button>
 
         <div id="status" class="status"></div>
@@ -91,6 +125,11 @@
 
     <script>
         function enviarOrden(boton) {
+            // Confirmación por vibración corta al pulsar en móviles
+            if ("vibrate" in navigator) {
+                navigator.vibrate(50);
+            }
+
             boton.disabled = true;
             const status = document.getElementById('status');
             status.textContent = "⏳ Enviando orden...";
@@ -100,6 +139,9 @@
             })
             .then(() => {
                 status.textContent = "✅ Orden enviada correctamente";
+                if ("vibrate" in navigator) {
+                    navigator.vibrate([100, 50, 100]); // Doble vibración corta de confirmación
+                }
             })
             .catch(() => {
                 status.textContent = "❌ Error al enviar la orden";
